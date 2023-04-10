@@ -23,16 +23,10 @@ def get_article(url):
 
 
 def get_cnn_article(soup):
-    article = {}
     content = soup.find_all("p", {"class:", "paragraph"})
-    article["content"] = "\n\n".join([p.text.strip() for p in content])
-    return article
+    return "\n\n".join([p.text.strip() for p in content])
 
 def get_fox_article(soup):
-    article = {}
     content = soup.find("div", {"class": "article-body"}).find_all("p")
-    article["content"] = "\n\n".join([p.text.strip() for p in content])
-    return article
-
-output = get_article("https://www.foxnews.com/us/florida-police-eye-gang-link-teen-murders-arrest-imminent")
-print(output)
+    filtered_content = [x for x in content if not x.find("a") or not x.find("a").find("strong")]
+    return "\n\n".join([p.text.strip() for p in filtered_content])
