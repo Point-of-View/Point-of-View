@@ -6,6 +6,7 @@ import json
 
 class Params():
     MODEL = "text-davinci-003"
+    # MODEL = "gpt-3.5-turbo"
     TEMPERATURE = 0.5
 
 def main():
@@ -36,11 +37,17 @@ def gen_prompt(inital_source, wanted_bias):
     with open('sources.json', 'r', encoding='utf8') as f:
         source_list = json.load(f)
     
-    source_bias = source_list['source']
+    source_bias = source_list[inital_source]
     
-    prompt = f"The following is an article written by {inital_source}, a {source_bias} news source. Please take \
+    prompt = f'The following is an article written by {inital_source}, a {source_bias} news source. Please take \
                 the same basic information the article is presenting, but \
-                turn it into an article that would be written by a {wanted_bias} news source: \n\n"
+                turn it into an article that would be written by a {wanted_bias} news source. Additionally, \
+                after your translation, provide an explanation for specific phrases or words you \
+                changed, or any reasonings you had for making any changes you did. \n\n Present all of this in \
+                a JSON string, where the translated article has the key "article". The phrases changed will \
+                be a list with the key "changes" and within the list, each phrase will have the original phrase \
+                (key "original"), the changed phrase (key "new") and the explanation (key "explanation").\
+                \n\n The article is below: \n\n'
     
     article = input("Please copy and paste the article text: ")
     
