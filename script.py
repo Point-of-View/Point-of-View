@@ -43,10 +43,12 @@ def gen_prompt(inital_source, wanted_bias):
                 the same basic information the article is presenting, but \
                 turn it into an article that would be written by a {wanted_bias} news source. Additionally, \
                 after your translation, provide an explanation for specific phrases or words you \
-                changed, or any reasonings you had for making any changes you did. \n\n Present all of this in \
+                changed, or any reasonings you had for making any and all changes you did. \n\n Present all of this in \
                 a JSON string, where the translated article has the key "article". The phrases changed will \
                 be a list with the key "changes" and within the list, each phrase will have the original phrase \
                 (key "original"), the changed phrase (key "new") and the explanation (key "explanation").\
+                Additionally, have one last JSON field explaining the new tone of the article (key "tone"), and why \
+                it has the bias that it does. \
                 \n\n The article is below: \n\n'
     
     article = input("Please copy and paste the article text: ")
