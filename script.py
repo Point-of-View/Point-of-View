@@ -1,6 +1,7 @@
 import os
 import openai
 import tiktoken
+from webscraper import get_article
 
 
 class Params():
@@ -28,7 +29,11 @@ def main():
 
 
 def gen_prompt():
-    source = input("Article source: ")
+    link = input("Please paste the article link: ")
+    article = get_article(link)
+    source = article["source"]
+    text = article["text"]
+
     prompt = f"The following is an article written by {source}. Please take \
                 the same basic information the article is presenting, but \
                 turn it into an article that would be written by "
@@ -36,10 +41,9 @@ def gen_prompt():
         prompt += "Fox News: \n"
     else:
         prompt += "CNN: \n"
+
     
-    article = input("Please copy and paste the article text: ")
-    
-    prompt += article
+    prompt += text
     return prompt
 
 
