@@ -6,7 +6,7 @@ import json
 
 class Params():
     MODEL = "text-davinci-003"
-    TEMPERATURE = 0.2
+    TEMPERATURE = 0.5
 
 def main():
     # Load your API key from an environment variable or secret management service
