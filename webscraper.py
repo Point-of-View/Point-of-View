@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import sys
 
 headers = {
     'Access-Control-Allow-Origin': '*',
@@ -11,7 +12,7 @@ headers = {
 
 def get_article(url):
     if not ("cnn.com" in url or "foxnews.com" in url):
-        return "Must be a Fox or CNN article"
+        return
     
     req = requests.get(url, headers)
     soup = BeautifulSoup(req.content, 'html.parser')
