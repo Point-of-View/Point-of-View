@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import sys
 
 headers = {
     'Access-Control-Allow-Origin': '*',
@@ -11,7 +12,7 @@ headers = {
 
 def get_article(url):
     if not ("cnn.com" in url or "foxnews.com" in url):
-        return "Must be a Fox or CNN article"
+        return
     
     req = requests.get(url, headers)
     soup = BeautifulSoup(req.content, 'html.parser')
@@ -23,16 +24,17 @@ def get_article(url):
 
 
 def get_cnn_article(soup):
-    article = {}
     content = soup.find_all("p", {"class:", "paragraph"})
-    article["content"] = "\n\n".join([p.text.strip() for p in content])
+    text = "\n\n".join([p.text.strip() for p in content])
+    article = {"source": "CNN", "text": text}
     return article
 
 def get_fox_article(soup):
-    article = {}
     content = soup.find("div", {"class": "article-body"}).find_all("p")
-    article["content"] = "\n\n".join([p.text.strip() for p in content])
+    filtered_content = [x for x in content if not x.find("a") or not x.find("a").find("strong")]
+    text = "\n\n".join([p.text.strip() for p in filtered_content])
+    article = {"source": "Fox News", "text": text}
     return article
 
-output = get_article("https://www.foxnews.com/us/florida-police-eye-gang-link-teen-murders-arrest-imminent")
-print(output)
+
+# print(get_article("https://www.foxnews.com/us/florida-police-eye-gang-link-teen-murders-arrest-imminent"))
