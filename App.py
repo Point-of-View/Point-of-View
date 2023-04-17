@@ -7,4 +7,6 @@ app = Flask(__name__)
 
 def translate():
     url = request.args.get('url')
-    return translate_article(url)
+    bias = request.args.get('bias')
+    output = translate_article(url, bias)
+    return output
