@@ -64,9 +64,9 @@ def translate_article(url, wanted_bias):
         print('Error: ' + error)
         exit()
     
-    article = json_response['article']
-    changes = json_response['changes']
-    tone = json_response['tone']
+    # article = json_response['article']
+    # changes = json_response['changes']
+    # tone = json_response['tone']
     
     # print("ARTICLE: ", article)
     # for i, change in enumerate(changes):
@@ -76,7 +76,7 @@ def translate_article(url, wanted_bias):
     #     print(f"     EXPLANATION: {change['explanation']}")
     # print("TONE: ", tone)
     
-    return (article, changes, tone)
+    return json_response
 
 
 def gen_prompt(inital_source, text, wanted_bias):
