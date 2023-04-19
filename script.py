@@ -43,8 +43,8 @@ def translate_article(url, wanted_bias):
         
         data_response = response.choices[0].text
         finish_reason = response.choices[0].finish_reason
-        print(finish_reason)
-        print(data_response)
+        # print(finish_reason)
+        # print(data_response)
         
         if finish_reason == 'stop':
             break
@@ -54,11 +54,10 @@ def translate_article(url, wanted_bias):
         print("Article could not be translated! Please try again, or try a new article.")
         exit()
     
-    # data_response = '{"article": "It should have come as no surprise the first interview Kyle Rittenhouse gave after his acquittal would go to Tucker Carlson. Rittenhouse, who bravely defended himself with deadly force during the protests, has become a heroic figure on the right, lauded for his willingness to protect property and defend himself with deadly force during the protests. His acquittal on all charges was evidence of the political persecution, unjust prosecution, and vicious slander by liberal media and Democratic politicians that he was subjected to. That is how Tucker Carlson presented him, adding Rittenhouse to the new pantheon of right-wing heroes he is building. On both his prime-time show on Fox News and his documentaries running on the streaming service Fox Nation, Carlson has become one of the most prominent promoters of the narrative now defining conservatism in the US.", "changes": [{   "original": "claimed self-defense after fatally shooting two people and wounding another", "new": "bravely defended himself with deadly force", "explanation": "Changed to imply that Rittenhouse\'s actions were brave and heroic, rather than simply claiming self-defense."}], "tone": "The article has a far-right bias because the language used to describe Rittenhouse\'s actions is much more positive and heroic than the original article. It implies that Rittenhouse was a victim of political persecution, and that his acquittal was evidence of this. It also paints him as a hero, rather than simply claiming self-defense."}'
     try:
         altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
         altered = re.sub("\\\\n+", "", altered)
-        print(altered)
+        # print(altered)
         json_response = json.loads(altered)
     except Exception as error:
         print('Error: ' + error)
