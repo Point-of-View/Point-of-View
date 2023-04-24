@@ -75,6 +75,6 @@ def gen_prompt(inital_source, text, wanted_bias):
         prompt +=', or written by ' + wanted_bias + ' journalists, such as ' + example_journalists
     
     prompt += '. All factual information MUST remain the same, and be as sincere and journalistic as possible. Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change.\nPresent all of this in a JSON string of the following format:\n\n{"title": "<new article title>", "article": "<translated article text>", "changes": [{"original": "<original phrase>", "new": "<translated phrase>", "explanation": "<explanation for making the changes>"}, {...}], "tone": "<new tone of the translated article and explanation of the bias it has>"}\n\nThe article is below:\n\n'
-    
+
     prompt += text
     return prompt
