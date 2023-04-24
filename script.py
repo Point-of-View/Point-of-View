@@ -3,7 +3,6 @@ import openai
 import tiktoken
 import json
 from webscraper import get_article
-import re
 
 
 class Params():
@@ -43,8 +42,6 @@ def translate_article(url, wanted_bias):
         
         data_response = response.choices[0].text
         finish_reason = response.choices[0].finish_reason
-        # print(finish_reason)
-        # print(data_response)
         
         if finish_reason == 'stop':
             break
@@ -54,43 +51,30 @@ def translate_article(url, wanted_bias):
         print("Article could not be translated! Please try again, or try a new article.")
         exit()
     
-    # try:
-    #     altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
-    #     altered = re.sub("\\\\n+", "", altered)
-    #     print(altered)
-    #     json_response = json.loads(altered)
-    # except Exception as error:
-    #     print('Error: ' + error)
-    #     exit()
-    
-    # article = json_response['article']
-    # changes = json_response['changes']
-    # tone = json_response['tone']
-    
-    # print("ARTICLE: ", article)
-    # for i, change in enumerate(changes):
-    #     print(f"CHANGE {i+1}: ")
-    #     print(f"     ORIGINAL: {change['original']}")
-    #     print(f"     CHANGE: {change['new']}")
-    #     print(f"     EXPLANATION: {change['explanation']}")
-    # print("TONE: ", tone)
+    try:
+        altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
+        json_response = json.loads(altered)
+    except Exception as error:
+        print(f'Error: {error}')
+        exit()
 
-    output = {"text": data_response.strip()}
-    
-    return output
+    return json_response
 
 
 def gen_prompt(inital_source, text, wanted_bias):
     with open('sources.json', 'r', encoding='utf8') as f:
         source_list = json.load(f)
     
-    source_bias = source_list[inital_source]
+    source_bias = source_list["news_bias"][inital_source]
+    example_sources = ', '.join(source_list["examples"][wanted_bias]["sources"])
+    example_journalists = ', '.join(source_list["examples"][wanted_bias]["journalists"])
     
-    prompt = 'The following is an article written by ' + inital_source + ', a ' + \
-        source_bias + '-biased news source. Take the same factual information the \
-        article is presenting, but rewrite the whole article as if it was be written \
-        by a ' + wanted_bias +'-biased news source. All factual information MUST \
-        remain the same! \n\n The article is below: \n\n'
+    prompt = 'The following is an article written by ' + inital_source + ', a ' + source_bias + '-biased news source. Take the same factual information the article is presenting, but rewrite the whole article as if it was be written by a ' + wanted_bias +'-biased news source, such as ' + example_sources
     
+    if wanted_bias != "moderate":
+        prompt +=', or written by ' + wanted_bias + ' journalists, such as ' + example_journalists
+    
+    prompt += '. All factual information MUST remain the same, and be as sincere and journalistic as possible. Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change.\nPresent all of this in a JSON string of the following format:\n\n{"title": "<new article title>", "article": "<translated article text>", "changes": [{"original": "<original phrase>", "new": "<translated phrase>", "explanation": "<explanation for making the changes>"}, {...}], "tone": "<new tone of the translated article and explanation of the bias it has>"}\n\nThe article is below:\n\n'
+
     prompt += text
     return prompt
