@@ -54,14 +54,14 @@ def translate_article(url, wanted_bias):
         print("Article could not be translated! Please try again, or try a new article.")
         exit()
     
-    try:
-        altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
-        altered = re.sub("\\\\n+", "", altered)
-        # print(altered)
-        json_response = json.loads(altered)
-    except Exception as error:
-        print('Error: ' + error)
-        exit()
+    # try:
+    #     altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
+    #     altered = re.sub("\\\\n+", "", altered)
+    #     print(altered)
+    #     json_response = json.loads(altered)
+    # except Exception as error:
+    #     print('Error: ' + error)
+    #     exit()
     
     # article = json_response['article']
     # changes = json_response['changes']
@@ -74,8 +74,10 @@ def translate_article(url, wanted_bias):
     #     print(f"     CHANGE: {change['new']}")
     #     print(f"     EXPLANATION: {change['explanation']}")
     # print("TONE: ", tone)
+
+    output = {"text": data_response.strip()}
     
-    return json_response
+    return output
 
 
 def gen_prompt(inital_source, text, wanted_bias):
@@ -88,14 +90,7 @@ def gen_prompt(inital_source, text, wanted_bias):
         source_bias + '-biased news source. Take the same factual information the \
         article is presenting, but rewrite the whole article as if it was be written \
         by a ' + wanted_bias +'-biased news source. All factual information MUST \
-        remain the same! Additionally, after the translation, provide an explanation\
-        for specific phrases or words that were changed. Identify as many changes as \
-        possible, but do not present phrases without a change. \n Present all of \
-        this in a JSON string of the following format:\n\n {"article": "<translated \
-        article text>","changes": [{"original": "<original phrase>","new": \
-        "<translated phrase>","explanation": "<explanation for making the changes>"},\
-        {...}],"tone": "<new tone of the translated article and explanation of the \
-        bias it has>"} \n\n The article is below: \n\n'
+        remain the same! \n\n The article is below: \n\n'
     
     prompt += text
     return prompt
