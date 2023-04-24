@@ -1,85 +1,102 @@
 {
-    "Wonkette": "far-left",
-    "Palmer Report": "far-left",
-    "Bipartisan Report": "far-left",
-    "Occupy Democrats": "far-left",
-    "Daily Kos": "far-left",
-    "Jezebel": "far-left",
-    "The Root": "far-left",
-    "The Nation": "far-left",
+    "news_bias": {
+        "VICE": "far-left",
+        "Mother Jones": "far-left",
+        "The Nation": "far-left",
+        "Jezebel": "far-left",
 
-    "Alternet": "liberal",
-    "Veterans Today": "liberal",
-    "Rolling Stone": "liberal",
-    "Salon": "liberal",
-    "Vanity Fair": "liberal",
-    "New Republic": "liberal",
-    "Slate": "liberal",
-    "Mother Jones": "liberal",
-    "The Intercept": "liberal",
-    "The New Yorker": "liberal",
-    "Vox": "liberal",
-    "Washington Monthly": "liberal",
-    "MSNBC": "liberal",
-    "Vice": "liberal",
-    "Huffington Post": "liberal",
-    "Washington Post": "liberal",
-    "CNN": "liberal",
-    "The New York Times": "liberal",
-    "The Atlantic": "liberal",
-    "The Guardian": "liberal",
-    "Time": "liberal",
-    "Politico": "liberal",
-    "FiveThirtyEight": "liberal",
-    "The Week": "liberal",
-    "Daily Beast": "liberal",
+        "New York Times": "liberal",
+        "CNN": "liberal",
+        "Politco": "liberal",
+        "The Intercept": " liberal",
 
-    "Newsweek": "moderate",
-    "DailyMail": "moderate",
-    "Wall Street Journal": "moderate",
-    "ABC": "moderate",
-    "NPR": "moderate",
-    "Forbes": "moderate",
-    "Insider": "moderate",
-    "The Hill": "moderate",
-    "PBS": "moderate",
-    "CBS": "moderate",
-    "Axios": "moderate",
-    "Bloomberg": "moderate",
-    "Reuters": "moderate",
-    "Air Force Times": "moderate",
-    "NewsNation": "moderate",
-    "Tangle": "moderate",
-    "American Action Forum": "moderate",
-    "CNBC": "moderate",
-    "The Bulwark": "moderate",
+        "AP": "moderate",
+        "NPR": "moderate",
+        "Reuters": "moderate",
+        "ABC": "moderate",
+        "AXIOS": "moderate",
 
-    "World News Group": "conservative",
-    "Rasmussen Reports": "conservative",
-    "Reason": "conservative",
-    "New York Post": "conservative",
-    "Fox News": "conservative",
-    "Washington Examiner": "conservative",
-    "Daily Wire": "conservative",
-    "Newsmax": "conservative",
-    "OAN Network": "conservative",
-    "RealClearPolitics": "conservative",
-    "Breitbart": "conservative",
-    "Washington Times": "conservative",
-    "National Review": "conservative",
-    "The Washington Free Beacon": "conservative",
+        "New York Post": "conservative",
+        "Fox News": "conservative",
+        "The Blaze": "conservative",
+        "OAN": "conservative",
 
-    "The Blaze": "far-right",
-    "The Federalist": "far-right",
-    "PragerU": "far-right",
-    "WND": "far-right",
-    "The Epoch Times": "far-right",
-    "The American Spectator": "far-right",
-    "Twitchy": "far-right",
-    "Glenn Beck": "far-right",
-    "Bill O'Reilly": "far-right",
-    "The Gateway Pundit": "far-right",
-    "InfoWars": "far-right",
-    "American Liberty Report": "far-right",
-    "Natural News": "far-right"
+        "Breitbart": "far-right",
+        "Newsmax": "far-right",
+        "Prager U": "far-right",
+        "The Epoch Times": "far-right",
+        "Storm Front": "far-right"
+    },
+
+    "examples": {
+        "far-left": {
+            "sources": [
+                "VICE",
+	            "Mother Jones",
+	            "The Nation",
+	            "Jezebel"
+            ],
+            "journalists": [
+                "Laura Bassett",
+                "Trone Dowd",
+                "David Corn",
+                "Ana Kasperian"
+            ]
+        },
+
+        "liberal": {
+            "sources": [
+                "New York Times",
+                "CNN",
+                "Politico",
+                "The Intercept"
+            ],
+            "journalists": [
+                "Lisa Lerer",
+                "Jim Acosta",
+                "Jake Tapper",
+                "Rachel Maddow"
+            ]
+        },
+
+        "moderate": {
+            "sources": [
+                "AP",
+                "NPR",
+                "Reuters",
+                "ABC",
+                "AXIOS"
+            ],
+            "journalists": []
+        },
+
+        "conservative": {
+            "sources": [
+                "New York Post",
+                "Fox News",
+                "The Blaze",
+                "OAN"
+            ],
+            "journalists": [
+                "Megyn Kelly",
+                "Sean Hannity",
+                "Ben Shapiro",
+                "Yuval Levin"
+            ]
+        },
+
+        "far-right": {
+            "sources": [
+                "Brietbart",
+                "Newsmax",
+                "Prager U",
+                "The Epoch Times",
+                "Storm Front"
+            ],
+            "journalists": [
+                "Tucker Carlson",
+                "Alex Jones"
+            ]
+        }
+    }
 }
