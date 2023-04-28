@@ -3,6 +3,8 @@ import openai
 import tiktoken
 import json
 from webscraper import get_article
+import re
+import ast
 
 
 class Params():
@@ -52,13 +54,40 @@ def translate_article(url, wanted_bias):
         exit()
     
     try:
-        altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
-        json_response = json.loads(altered)
+        # print(data_response)
+        # altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
+        altered = data_response.strip()
+        print(altered)
+        
+        title = re.search(r"(?i)TITLE:\s*(.*)\s*ARTICLE:", altered, re.DOTALL).group(1)
+        print("TITLE ", title)
+        article = re.search(r"(?i)ARTICLE:\s*(.*)\s*CHANGES:", altered, re.DOTALL).group(1)
+        print("ARTICLE ", article)
+        # changes = re.findall(r"\{ORIGINAL:\s*'(.*)'\s*NEW:\s*'(.*)'\s*EXPLANATION:\s*(.*)\}", altered, re.DOTALL)
+        # changes = re.findall(r"\{ORIGINAL:\s*'(.*)'\s*NEW:\s*'(.*)'\s*EXPLANATION:\s*(.*?)'\}", altered, re.DOTALL)
+        # changes = re.findall(r"{ORIGINAL:\s*'([^']*)'\s*NEW:\s*'([^']*)'\s*EXPLANATION:\s*'([^']*)'}", altered, re.DOTALL)
+        # changes = re.findall(r"CHANGES:\s*\[({[^{}]*\n*[^{}]*})+\]", altered, re.DOTALL)
+        # changes = re.findall(r"{ORIGINAL:\s*'([^']*)'\s*NEW:\s*'([^']*)'\s*EXPLANATION:\s*([^}]*)}", altered, re.DOTALL)
+        # changes = re.search(r"(?i)CHANGES:\s*(.*)\s*TONE:", altered, re.DOTALL).group(1)
+        changes = re.search(r"(?<=\[).*?(?=\])", altered, re.DOTALL).group(0)
+        changes = changes.replace('"', '\"')
+        # changes = '[' + changes + ']'
+        print(changes)
+        try:
+            change_list = ast.literal_eval(changes)
+        except Exception as e:
+            print(f"Something went wrong in parsing the changes: {e}")
+            change_list = []
+        print("CHANGES" , change_list)
+        tone = re.search(r"(?i)TONE:\s*(.*)", altered, re.DOTALL).group(1)
+        print("TONE ", tone)
+        # altered = data_response.strip().replace("\n", "<p>").replace('"', '\"')
+        # json_response = json.loads(altered)
     except Exception as error:
         print(f'Error: {error}')
         exit()
 
-    return json_response
+    return title, article, changes, tone
 
 
 def gen_prompt(inital_source, text, wanted_bias):
@@ -74,7 +103,12 @@ def gen_prompt(inital_source, text, wanted_bias):
     if wanted_bias != "moderate":
         prompt +=', or written by ' + wanted_bias + ' journalists, such as ' + example_journalists
     
-    prompt += '. All factual information MUST remain the same, and be as sincere and journalistic as possible. Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change.\nPresent all of this in a JSON string of the following format:\n\n{"title": "<new article title>", "article": "<translated article text>", "changes": [{"original": "<original phrase>", "new": "<translated phrase>", "explanation": "<explanation for making the changes>"}, {...}], "tone": "<new tone of the translated article and explanation of the bias it has>"}\n\nThe article is below:\n\n'
-
+    prompt += ". All factual information MUST remain the same, and be as sincere and journalistic as possible. Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change.\nPresent all of this in the following text format:\n\nTITLE: <new article title> ARTICLE: <translated article text> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
+    
     prompt += text
     return prompt
+
+
+
+
+translate_article("https://www.foxnews.com/us/florida-police-eye-gang-link-teen-murders-arrest-imminent", 'far-left')
