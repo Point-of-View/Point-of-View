@@ -54,40 +54,35 @@ def translate_article(url, wanted_bias):
         exit()
     
     try:
-        # print(data_response)
-        # altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
-        altered = data_response.strip()
-        print(altered)
+        altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
+        # print(altered)
         
         title = re.search(r"(?i)TITLE:\s*(.*)\s*ARTICLE:", altered, re.DOTALL).group(1)
-        print("TITLE ", title)
+        
         article = re.search(r"(?i)ARTICLE:\s*(.*)\s*CHANGES:", altered, re.DOTALL).group(1)
-        print("ARTICLE ", article)
-        # changes = re.findall(r"\{ORIGINAL:\s*'(.*)'\s*NEW:\s*'(.*)'\s*EXPLANATION:\s*(.*)\}", altered, re.DOTALL)
-        # changes = re.findall(r"\{ORIGINAL:\s*'(.*)'\s*NEW:\s*'(.*)'\s*EXPLANATION:\s*(.*?)'\}", altered, re.DOTALL)
-        # changes = re.findall(r"{ORIGINAL:\s*'([^']*)'\s*NEW:\s*'([^']*)'\s*EXPLANATION:\s*'([^']*)'}", altered, re.DOTALL)
-        # changes = re.findall(r"CHANGES:\s*\[({[^{}]*\n*[^{}]*})+\]", altered, re.DOTALL)
-        # changes = re.findall(r"{ORIGINAL:\s*'([^']*)'\s*NEW:\s*'([^']*)'\s*EXPLANATION:\s*([^}]*)}", altered, re.DOTALL)
-        # changes = re.search(r"(?i)CHANGES:\s*(.*)\s*TONE:", altered, re.DOTALL).group(1)
-        changes = re.search(r"(?<=\[).*?(?=\])", altered, re.DOTALL).group(0)
-        changes = changes.replace('"', '\"')
-        # changes = '[' + changes + ']'
-        print(changes)
-        try:
-            change_list = ast.literal_eval(changes)
-        except Exception as e:
-            print(f"Something went wrong in parsing the changes: {e}")
-            change_list = []
-        print("CHANGES" , change_list)
+        
+        changes = re.search(r"(?i)CHANGES:\s*(.*)\s*TONE:", altered, re.DOTALL).group(1)
+        originals = re.findall(r"ORIGINAL:\s*(.*?)\s*NEW:", changes, re.DOTALL)
+        news = re.findall(r"NEW:\s*(.*?)\s*EXPLANATION:", changes, re.DOTALL)
+        explanations = re.findall(r"EXPLANATION:\s*(.*?)\s*}", changes, re.DOTALL)
+        
+        if len(originals) != len(news) != len(explanations):
+            print("ERROR GETTING CHANGES")
+            exit()
+        
+        num_changes = len(originals)
+        change_list = [None] * num_changes
+        
+        for i in range(num_changes):
+            change_list[i] = (originals[i], news[i], explanations[i])
+        
         tone = re.search(r"(?i)TONE:\s*(.*)", altered, re.DOTALL).group(1)
-        print("TONE ", tone)
-        # altered = data_response.strip().replace("\n", "<p>").replace('"', '\"')
-        # json_response = json.loads(altered)
+
     except Exception as error:
         print(f'Error: {error}')
         exit()
 
-    return title, article, changes, tone
+    return {"TITLE": title, "ARTICLE": article, "CHANGES": change_list, "TONE": tone}
 
 
 def gen_prompt(inital_source, text, wanted_bias):
@@ -111,4 +106,4 @@ def gen_prompt(inital_source, text, wanted_bias):
 
 
 
-translate_article("https://www.foxnews.com/us/florida-police-eye-gang-link-teen-murders-arrest-imminent", 'far-left')
+print(translate_article("https://www.foxnews.com/us/florida-police-eye-gang-link-teen-murders-arrest-imminent", 'far-left'))
