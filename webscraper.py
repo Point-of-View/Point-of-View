@@ -35,6 +35,3 @@ def get_fox_article(soup):
     text = "\n\n".join([p.text.strip() for p in filtered_content])
     article = {"source": "Fox News", "text": text}
     return article
-
-
-# print(get_article("https://www.foxnews.com/us/florida-police-eye-gang-link-teen-murders-arrest-imminent"))

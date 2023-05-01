@@ -4,7 +4,6 @@ import tiktoken
 import json
 from webscraper import get_article
 import re
-import ast
 
 
 class Params():
@@ -54,20 +53,19 @@ def translate_article(url, wanted_bias):
         exit()
     
     try:
-        altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
-        # print(altered)
+        altered = data_response.strip().replace("\n", "\\n").replace('"', '\"').replace("'", "\'")
         
         title = re.search(r"(?i)TITLE:\s*(.*)\s*ARTICLE:", altered, re.DOTALL).group(1)
         
         article = re.search(r"(?i)ARTICLE:\s*(.*)\s*CHANGES:", altered, re.DOTALL).group(1)
         
         changes = re.search(r"(?i)CHANGES:\s*(.*)\s*TONE:", altered, re.DOTALL).group(1)
-        originals = re.findall(r"ORIGINAL:\s*(.*?)\s*NEW:", changes, re.DOTALL)
-        news = re.findall(r"NEW:\s*(.*?)\s*EXPLANATION:", changes, re.DOTALL)
-        explanations = re.findall(r"EXPLANATION:\s*(.*?)\s*}", changes, re.DOTALL)
+        originals = re.findall(r"(?i)ORIGINAL:\s*(.*?)\s*NEW:", changes, re.DOTALL)
+        news = re.findall(r"(?i)NEW:\s*(.*?)\s*EXPLANATION:", changes, re.DOTALL)
+        explanations = re.findall(r"(?i)EXPLANATION:\s*(.*?)\s*}", changes, re.DOTALL)
         
         if len(originals) != len(news) != len(explanations):
-            print("ERROR GETTING CHANGES")
+            print("ERROR GETTING CHANGES!! Please try again.")
             exit()
         
         num_changes = len(originals)
@@ -77,11 +75,11 @@ def translate_article(url, wanted_bias):
             change_list[i] = (originals[i], news[i], explanations[i])
         
         tone = re.search(r"(?i)TONE:\s*(.*)", altered, re.DOTALL).group(1)
-
+    
     except Exception as error:
-        print(f'Error: {error}')
+        print(f'Error parsing response: {error}')
         exit()
-
+    
     return {"TITLE": title, "ARTICLE": article, "CHANGES": change_list, "TONE": tone}
 
 
@@ -102,8 +100,3 @@ def gen_prompt(inital_source, text, wanted_bias):
     
     prompt += text
     return prompt
-
-
-
-
-print(translate_article("https://www.foxnews.com/us/florida-police-eye-gang-link-teen-murders-arrest-imminent", 'far-left'))
