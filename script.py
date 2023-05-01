@@ -100,3 +100,6 @@ def gen_prompt(inital_source, text, wanted_bias):
     
     prompt += text
     return prompt
+
+
+print(translate_article("https://www.cnn.com/2023/05/01/politics/biden-economy-first-republic-bank/index.html", "far-right"))
