@@ -3,6 +3,7 @@ import openai
 import tiktoken
 import json
 from webscraper import get_article
+import re
 
 
 class Params():
@@ -52,13 +53,34 @@ def translate_article(url, wanted_bias):
         exit()
     
     try:
-        altered = data_response.strip().replace("\n", "\\n").replace('"', '\"')
-        json_response = json.loads(altered)
+        altered = data_response.strip().replace("\n", "\\n").replace('"', '\"').replace("'", "\'")
+        
+        title = re.search(r"(?i)TITLE:\s*(.*)\s*ARTICLE:", altered, re.DOTALL).group(1)
+        
+        article = re.search(r"(?i)ARTICLE:\s*(.*)\s*CHANGES:", altered, re.DOTALL).group(1)
+        
+        changes = re.search(r"(?i)CHANGES:\s*(.*)\s*TONE:", altered, re.DOTALL).group(1)
+        originals = re.findall(r"(?i)ORIGINAL:\s*(.*?)\s*NEW:", changes, re.DOTALL)
+        news = re.findall(r"(?i)NEW:\s*(.*?)\s*EXPLANATION:", changes, re.DOTALL)
+        explanations = re.findall(r"(?i)EXPLANATION:\s*(.*?)\s*}", changes, re.DOTALL)
+        
+        if len(originals) != len(news) != len(explanations):
+            print("ERROR GETTING CHANGES!! Please try again.")
+            exit()
+        
+        num_changes = len(originals)
+        change_list = [None] * num_changes
+        
+        for i in range(num_changes):
+            change_list[i] = (originals[i], news[i], explanations[i])
+        
+        tone = re.search(r"(?i)TONE:\s*(.*)", altered, re.DOTALL).group(1)
+    
     except Exception as error:
-        print(f'Error: {error}')
+        print(f'Error parsing response: {error}')
         exit()
-
-    return json_response
+    
+    return {"TITLE": title, "ARTICLE": article, "CHANGES": change_list, "TONE": tone}
 
 
 def gen_prompt(inital_source, text, wanted_bias):
@@ -74,7 +96,7 @@ def gen_prompt(inital_source, text, wanted_bias):
     if wanted_bias != "moderate":
         prompt +=', or written by ' + wanted_bias + ' journalists, such as ' + example_journalists
     
-    prompt += '. All factual information MUST remain the same, and be as sincere and journalistic as possible. Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change.\nPresent all of this in a JSON string of the following format:\n\n{"title": "<new article title>", "article": "<translated article text>", "changes": [{"original": "<original phrase>", "new": "<translated phrase>", "explanation": "<explanation for making the changes>"}, {...}], "tone": "<new tone of the translated article and explanation of the bias it has>"}\n\nThe article is below:\n\n'
-
+    prompt += ". All factual information MUST remain the same, and be as sincere and journalistic as possible. Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change.\nPresent all of this in the following text format:\n\nTITLE: <new article title> ARTICLE: <translated article text> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
+    
     prompt += text
     return prompt
