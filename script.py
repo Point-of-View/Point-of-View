@@ -39,7 +39,8 @@ def translate_article(url, wanted_bias):
         response = openai.Completion.create(model=Params.MODEL,
                                             prompt=prompt,
                                             temperature=Params.TEMPERATURE,
-                                            max_tokens=tokens_left)
+                                            max_tokens=tokens_left,
+                                            logit_bias=json.load(open('article_scores/far_left.json', 'r', encoding='utf-8')))
         
         data_response = response.choices[0].text
         finish_reason = response.choices[0].finish_reason
@@ -96,10 +97,10 @@ def gen_prompt(inital_source, text, wanted_bias):
     if wanted_bias != "moderate":
         prompt +=', or written by ' + wanted_bias + ' journalists, such as ' + example_journalists
     
-    prompt += ". All factual information MUST remain the same, and be as sincere and journalistic as possible. Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change.\nPresent all of this in the following text format:\n\nTITLE: <new article title> ARTICLE: <translated article text> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
+    prompt += ". All factual information MUST remain the same, and be as sincere as possible. Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change.\nPresent all of this in the following text format:\n\nTITLE: <new article title> ARTICLE: <translated article text> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
     
     prompt += text
     return prompt
 
 
-print(translate_article("https://www.cnn.com/2023/05/01/politics/biden-economy-first-republic-bank/index.html", "far-right"))
+# print(translate_article("https://www.foxnews.com/politics/senate-democrat-blasts-bidens-militarization-of-border", "far-left"))
