@@ -26,8 +26,8 @@ def translate_article(url, wanted_bias):
     except Exception as e:
         print(f"Error loading OpenAI organization: {e} \nMoving on...")
     
-    enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
-    tokens_left = 4096 - len(enc.encode(prompt))
+    enc = tiktoken.encoding_for_model('gpt-3.5-turbo')
+    tokens_left = 4080 - len(enc.encode(prompt)) - len(enc.encode("You are an assistant rewriting news articles with different political biases."))
     print(tokens_left)
     if tokens_left < 2250:
         print("We're sorry! This article is too long to translate at this time. Please try a different article.")
@@ -107,4 +107,4 @@ def gen_prompt(inital_source, text, wanted_bias):
     return prompt
 
 
-# print(translate_article("https://www.foxnews.com/politics/senate-democrat-blasts-bidens-militarization-of-border", "far-left"))
+print(translate_article("https://www.foxnews.com/politics/senate-democrat-blasts-bidens-militarization-of-border", "far-left"))
