@@ -28,7 +28,7 @@ def translate_article(url, wanted_bias):
     
     enc = tiktoken.encoding_for_model('gpt-3.5-turbo')
     tokens_left = 4080 - len(enc.encode(prompt)) - len(enc.encode("You are an assistant rewriting news articles with different political biases."))
-    print(tokens_left)
+    # print(tokens_left)
     if tokens_left < 2250:
         print("We're sorry! This article is too long to translate at this time. Please try a different article.")
         exit()
@@ -58,7 +58,7 @@ def translate_article(url, wanted_bias):
     
     try:
         altered = data_response.strip().replace("\n", "\\n").replace('"', '\"').replace("'", "\'")
-        print(altered)
+        # print(altered)
         
         title = re.search(r"(?i)TITLE:\s*(.*)\s*ARTICLE:", altered, re.DOTALL).group(1)
         
@@ -107,4 +107,4 @@ def gen_prompt(inital_source, text, wanted_bias):
     return prompt
 
 
-print(translate_article("https://www.foxnews.com/politics/senate-democrat-blasts-bidens-militarization-of-border", "far-left"))
+# print(translate_article("https://www.foxnews.com/politics/senate-democrat-blasts-bidens-militarization-of-border", "far-left"))
