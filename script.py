@@ -105,6 +105,3 @@ def gen_prompt(inital_source, text, wanted_bias):
     
     prompt += text
     return prompt
-
-
-# print(translate_article("https://www.foxnews.com/politics/senate-democrat-blasts-bidens-militarization-of-border", "far-left"))
