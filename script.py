@@ -7,8 +7,8 @@ import re
 
 
 class Params():
-    MODEL = "text-davinci-003"
-    TEMPERATURE = 0.5
+    MODEL = 'text-davinci-003'
+    TEMPERATURE = 0.2
 
 def translate_article(url, wanted_bias):
     # Scrape article text
@@ -26,8 +26,8 @@ def translate_article(url, wanted_bias):
     except Exception as e:
         print(f"Error loading OpenAI organization: {e} \nMoving on...")
     
-    enc = tiktoken.encoding_for_model("text-davinci-003")
-    tokens_left = 4096 - len(enc.encode(prompt))
+    enc = tiktoken.encoding_for_model(Params.MODEL)
+    tokens_left = 4080 - len(enc.encode(prompt))
     print(tokens_left)
     if tokens_left < 2250:
         print("We're sorry! This article is too long to translate at this time. Please try a different article.")
@@ -37,13 +37,14 @@ def translate_article(url, wanted_bias):
     
     for _ in range(3):
         response = openai.Completion.create(model=Params.MODEL,
-                                            prompt=prompt,
-                                            temperature=Params.TEMPERATURE,
-                                            max_tokens=tokens_left,
-                                            logit_bias=json.load(open('article_scores/far_left.json', 'r', encoding='utf-8')))
-        
-        data_response = response.choices[0].text
-        finish_reason = response.choices[0].finish_reason
+                                                prompt=prompt,
+                                                temperature=Params.TEMPERATURE,
+                                                max_tokens=tokens_left,
+                                                logit_bias=json.load(open(f'word_scores/{wanted_bias}_scores.json', 'r', encoding='utf-8')))
+                
+        print(response)
+        data_response = response['choices'][0]['text']
+        finish_reason = response['choices'][0]['finish_reason']
         
         if finish_reason == 'stop':
             break
@@ -55,6 +56,7 @@ def translate_article(url, wanted_bias):
     
     try:
         altered = data_response.strip().replace("\n", "\\n").replace('"', '\"').replace("'", "\'")
+        # print(altered)
         
         title = re.search(r"(?i)TITLE:\s*(.*)\s*ARTICLE:", altered, re.DOTALL).group(1)
         
@@ -92,15 +94,14 @@ def gen_prompt(inital_source, text, wanted_bias):
     example_sources = ', '.join(source_list["examples"][wanted_bias]["sources"])
     example_journalists = ', '.join(source_list["examples"][wanted_bias]["journalists"])
     
-    prompt = 'The following is an article written by ' + inital_source + ', a ' + source_bias + '-biased news source. Take the same factual information the article is presenting, but rewrite the whole article as if it was be written by a ' + wanted_bias +'-biased news source, such as ' + example_sources
+    prompt = 'The following is an article written by ' + inital_source + ', a ' + source_bias + '-biased news source. Take the same factual information the article is presenting, but rewrite the whole article as if it was an opinion piece written by a ' + wanted_bias +'-biased news source, such as ' + example_sources
     
     if wanted_bias != "moderate":
         prompt +=', or written by ' + wanted_bias + ' journalists, such as ' + example_journalists
     
-    prompt += ". All factual information MUST remain the same, and be as sincere as possible. Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change.\nPresent all of this in the following text format:\n\nTITLE: <new article title> ARTICLE: <translated article text> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
+    prompt += ". Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change. Make sure all changes are actually in the new article you create.\nPresent all of this in the following text format:\n\nTITLE: <new article title> ARTICLE: <translated article text> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
     
     prompt += text
     return prompt
 
-
-# print(translate_article("https://www.foxnews.com/politics/senate-democrat-blasts-bidens-militarization-of-border", "far-left"))
+print(translate_article("https://www.cnn.com/2023/05/04/opinions/border-surge-immigration-biden-problem-brown/index.html", "far-right"))
