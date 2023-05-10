@@ -7,7 +7,7 @@ import re
 
 
 class Params():
-    MODEL = "gpt-3.5-turbo"
+    MODEL = "text-davinci-003"
     TEMPERATURE = 0.5
 
 def translate_article(url, wanted_bias):
@@ -26,9 +26,9 @@ def translate_article(url, wanted_bias):
     except Exception as e:
         print(f"Error loading OpenAI organization: {e} \nMoving on...")
     
-    enc = tiktoken.encoding_for_model('gpt-3.5-turbo')
-    tokens_left = 4080 - len(enc.encode(prompt)) - len(enc.encode("You are an assistant rewriting news articles with different political biases."))
-    # print(tokens_left)
+    enc = tiktoken.encoding_for_model(Params.MODEL)
+    tokens_left = 4080 - len(enc.encode(prompt))
+    print(tokens_left)
     if tokens_left < 2250:
         print("We're sorry! This article is too long to translate at this time. Please try a different article.")
         exit()
@@ -36,17 +36,14 @@ def translate_article(url, wanted_bias):
     finish_reason = ""
     
     for _ in range(3):
-        response = openai.ChatCompletion.create(model=Params.MODEL,
-                                                messages=
-                                                [
-                                                    {"role": "system", "content": "You are an assistant rewriting news articles with different political biases."},
-                                                    {"role": "user", "content": prompt}
-                                                ],
+        response = openai.Completion.create(model=Params.MODEL,
+                                                prompt=prompt,
                                                 temperature=Params.TEMPERATURE,
                                                 max_tokens=tokens_left)
+                                                # logit_bias={51428: 2, 25: 2, 220: 2, 93015: 2, 6969: 2, 71894: 2, 18973: 2, 99301: 2, 2186: 2, 314: 2, 16560: 2, 4154: 2, 95179: 2, 3579: 2, 59692: 2, 350: 2, 5338: 2})
                 
-        data_response = response['choices'][0]['message']['content']
-        finish_reason = response['choices'][0]['finish_reason']
+        data_response = response.choices[0].text
+        finish_reason = response.choices[0].finish_reason
         
         if finish_reason == 'stop':
             break
@@ -60,15 +57,17 @@ def translate_article(url, wanted_bias):
         altered = data_response.strip().replace("\n", "\\n").replace('"', '\"').replace("'", "\'")
         # print(altered)
         
-        title = re.search(r"(?i)TITLE:\s*(.*)\s*ARTICLE:", altered, re.DOTALL).group(1)
+        title = re.search(r"(?i)TITLE:\s*(.*)\s*ARTICLE:", altered, re.DOTALL).group(1) if re.search(r"(?i)TITLE:\s*(.*)\s*ARTICLE:", altered, re.DOTALL) else ""
         
-        article = re.search(r"(?i)ARTICLE:\s*(.*)\s*CHANGES:", altered, re.DOTALL).group(1)
+        article = re.search(r"(?i)ARTICLE:\s*(.*)\s*CHANGES:", altered, re.DOTALL).group(1) if re.search(r"(?i)ARTICLE:\s*(.*)\s*CHANGES:", altered, re.DOTALL) else ""
         
-        changes = re.search(r"(?i)CHANGES:\s*(.*)\s*TONE:", altered, re.DOTALL).group(1)
+        changes = re.search(r"(?i)CHANGES:\s*(.*)\s*TONE:", altered, re.DOTALL).group(1) if re.search(r"(?i)CHANGES:\s*(.*)\s*TONE:", altered, re.DOTALL) else ""
         originals = re.findall(r"(?i)ORIGINAL:\s*(.*?)\s*NEW:", changes, re.DOTALL)
         news = re.findall(r"(?i)NEW:\s*(.*?)\s*EXPLANATION:", changes, re.DOTALL)
         explanations = re.findall(r"(?i)EXPLANATION:\s*(.*?)\s*}", changes, re.DOTALL)
-        
+
+        print('\n\n', changes, '\n\n', originals, '\n\n', news, '\n\n', explanations)
+
         if len(originals) != len(news) != len(explanations):
             print("ERROR GETTING CHANGES!! Please try again.")
             exit()
