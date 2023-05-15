@@ -95,7 +95,7 @@ def gen_prompt(inital_source, text, wanted_bias):
     if wanted_bias != "moderate":
         prompt +=', or written by ' + wanted_bias + ' journalists, such as ' + example_journalists
     
-    prompt += ". Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Identify as many changes as possible, but do not present phrases without a change. Guarentee all changes are in the new article.\nPresent all of this in the following text format:\n\nTITLE: <new article title> ARTICLE: <translated article text> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
+    prompt += ". Additionally, after the translation, provide an explanation for specific phrases or words that were changed. Guarentee all changes are in the new article. Identify as many changes as possible, but do not present phrases without a change.\nPresent all of this in the following text format:\n\nTITLE: <new article title> ARTICLE: <translated article text> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
     
     prompt += text
     return prompt
