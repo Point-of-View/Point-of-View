@@ -108,4 +108,4 @@ def replace_changes(article, change_list):
 
 
 
-print(translate_article("https://www.cnn.com/2023/05/15/politics/abortion-north-carolina-what-matters/index.html", "far-right"))
+# print(translate_article("https://www.cnn.com/2023/05/15/politics/abortion-north-carolina-what-matters/index.html", "far-right"))
