@@ -94,7 +94,7 @@ def gen_changes(inital_source, text, wanted_bias):
     if wanted_bias != "moderate":
         prompt +=', or written by ' + wanted_bias + ' journalists, such as ' + example_journalists
     
-    prompt += ". For each change, present the original change, the new phrase, and an explanation for the change. Identify as many changes as possible, but do not present phrases without a change. Additionally, create a title for the new article, as well as an explanation of the new tone of the article. Present it in the following format: TITLE <new article title> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
+    prompt += ". Identify as many changes as possible, but do not present phrases without a change. Make sure changes are in the correct bias. For each change, present the original phrase, the new phrase, and an explanation for the change. Also, create a title for the new article, and an explanation of the new tone of the article. Present it in the following format: TITLE <new article title> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
         
     prompt += text
     return prompt
