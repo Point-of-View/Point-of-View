@@ -36,7 +36,8 @@ def translate_article(url, wanted_bias):
         response = openai.Completion.create(model=Params.MODEL,
                                             prompt=changes_prompt,
                                             temperature=Params.TEMPERATURE,
-                                            max_tokens=tokens_left
+                                            max_tokens=tokens_left,
+                                            logit_bias = json.load(open(f'word_scores/{wanted_bias}_scores.json', 'r', encoding='utf8'))
                                             )
                 
         data_response = response.choices[0].text
@@ -94,7 +95,7 @@ def gen_changes(inital_source, text, wanted_bias):
     if wanted_bias != "moderate":
         prompt +=', or written by ' + wanted_bias + ' journalists, such as ' + example_journalists
     
-    prompt += ". Identify as many changes as possible, but do not present phrases without a change. Make sure changes are in the correct bias. Do not change facts. For each change, present the original phrase, the new phrase, and an explanation for the change. Also, create a title for the new article, and an explanation of the new tone of the article. Present it in the following format: TITLE <new article title> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
+    prompt += ". Identify as many changes as possible, but do not present phrases without a change. Make sure changes are in the correct bias. Do not change facts. For each change, present the original phrase, the new phrase, and an explanation for the change. Also, create a title for the new article, and an explanation of the new tone of the article. Present it in the following format: TITLE: <new article title> CHANGES: [{ORIGINAL: <original phrase> NEW: <new phrase> EXPLANATION: <explanation for making the changes>}, {ORIGINAL: ...}, {...}] TONE: <new tone of the translated article and explanation of the bias it has>\n\nThe article is below:\n\n"
         
     prompt += text
     return prompt
