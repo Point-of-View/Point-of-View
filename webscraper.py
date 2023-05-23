@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import sys
+
 
 headers = {
     'Access-Control-Allow-Origin': '*',
@@ -10,11 +10,23 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
     }
 
+
 def get_article(url):
+    """
+    Gets the text of the wanted article
+
+    :param url: Article url of interests
+    :type url: string
+    :return: Dictionary of scraped information
+    :rtype: dict
+    """
+    
+    # Only functional with CNN and Fox currently
     if not ("cnn.com" in url or "foxnews.com" in url):
         return
     
-    req = requests.get(url, headers)
+    # Set up Requests and Beautiful Soup
+    req = requests.get(url=url, headers=headers, timeout=30)
     soup = BeautifulSoup(req.content, 'html.parser')
 
     if "cnn.com" in url:
@@ -24,20 +36,32 @@ def get_article(url):
 
 
 def get_cnn_article(soup):
+    """
+    Perform scraping for CNN articles
+
+    :param soup: BeautifulSoup
+    :type soup: BeautifulSoup object
+    :return: Dictionary of scraped information
+    :rtype: dict
+    """
+    
     title = soup.find("h1").text.strip()
     content = soup.find_all("p", {"class:", "paragraph"})
     text = "\n\n".join([p.text.strip() for p in content])
-    article = {"source": "CNN", "text": text, "title": title}
-    return article
+    return {"source": "CNN", "text": text, "title": title}
 
 def get_fox_article(soup):
+    """
+    Perform scraping for Fox News articles
+
+    :param soup: BeautifulSoup
+    :type soup: BeautifulSoup object
+    :return: Dictionary of scraped information
+    :rtype: dict
+    """
+    
     title = soup.find("h1").text.strip()
     content = soup.find("div", {"class": "article-body"}).find_all("p")
     filtered_content = [x for x in content if not x.find("a") or not x.find("a").find("strong")]
     text = "\n\n".join([p.text.strip() for p in filtered_content])
-    article = {"source": "Fox News", "text": text, "title": title}
-    return article
-
-
-
-print(get_article('https://www.foxnews.com/politics/florida-gov-ron-desantis-announce-candidacy-president-wednesday-twitter-sources'))
+    return {"source": "Fox News", "text": text, "title": title}
